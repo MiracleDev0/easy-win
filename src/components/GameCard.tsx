@@ -9,13 +9,15 @@ interface GameCardProps {
   onScratchComplete: (isWinner: boolean, prizeAmount: number) => void;
   hasGoldenOverlay: boolean;
   showScratchedResult?: boolean;
+  winningIndices?: number[]; // 🔴 indices of winning symbols (0–8)
 }
 
 const GameCard: React.FC<GameCardProps> = ({ 
   scratchCard,  
   onScratchComplete,
   hasGoldenOverlay,
-  showScratchedResult = false
+  showScratchedResult = false,
+  winningIndices = []
 }) => {
   const generateTicketId = () => {
     return `WC${Date.now().toString().slice(-6)}`;
@@ -55,15 +57,22 @@ const GameCard: React.FC<GameCardProps> = ({
     return (
       <div className="scratched-result-display">
         <div className="result-grid">
-          {scratchCard.symbols.slice(0, 9).map((symbol: GameSymbol, index: number) => (
-            <div key={index} className="result-cell">
-              <img 
-                src={symbol.image} 
-                alt={symbol.name}
-                className="result-symbol"
-              />
-            </div>
-          ))}
+          {scratchCard.symbols.slice(0, 9).map((symbol: GameSymbol, index: number) => {
+            const isWinningCell = winningIndices.includes(index);
+
+            return (
+              <div
+                key={index}
+                className={`result-cell ${isWinningCell ? 'highlight-win' : ''}`}
+              >
+                <img 
+                  src={symbol.image} 
+                  alt={symbol.name}
+                  className="result-symbol"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     );
